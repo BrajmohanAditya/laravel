@@ -1,10 +1,12 @@
+"use client";
 import Image from "next/image";
-import React from "react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { useState } from "react";
 import Login from "@/components/auth/Login";
 import Register from "@/components/auth/Register";
 
-export default function login() {
+export default function AuthPage() {
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
       <div className="hidden lg:flex justify-center items-center h-screen">
@@ -14,6 +16,7 @@ export default function login() {
           height={500}
           alt="auth_img"
           className="w-full object-contain"
+          priority
         />
       </div>
       <div className="h-screen flex justify-center items-center flex-col">
@@ -23,14 +26,13 @@ export default function login() {
             Where developers suffer together
           </h1>
         </div>
-        <Tabs defaultValue="login" className="w-full flex flex-col px-4 md:w-[500px]">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
-          </TabsList>
-          <Login />
-          <Register />
-        </Tabs>
+        <div className="w-full flex flex-col px-4 md:w-[500px]">
+          {isLogin ? (
+            <Login toggleAuth={() => setIsLogin(false)} />
+          ) : (
+            <Register toggleAuth={() => setIsLogin(true)} />
+          )}
+        </div>
       </div>
     </div>
   );

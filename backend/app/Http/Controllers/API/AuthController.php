@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterRequest;
+use App\Http\Controllers\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Hash;
 use Exception;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
+
 
 class AuthController extends Controller
 {
