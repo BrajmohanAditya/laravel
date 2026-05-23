@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import React, { useState } from "react";
-import Login from "@/components/auth/Login";
-import Register from "@/components/auth/Register";
+import Login from "@/app/pages/auth/login/Login";
+import Register from "@/app/pages/auth/register/Register";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -37,4 +37,3 @@ export default function AuthPage() {
     </div>
   );
 }
-

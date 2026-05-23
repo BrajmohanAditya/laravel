@@ -17,9 +17,11 @@ export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
   } = useForm();
 
   const registerFormHandler = async (data: any) => {
+    // Supplying name parameter from username to prevent backend 422 error since it was removed from UI
+    const payload = { ...data, name: data.username };
     setLoading(true);
     await myAxios
-      .post(REGISTER_URL, data)
+      .post(REGISTER_URL, payload)
       .then((res) => {
         const response = res.data;
         setLoading(false);
@@ -62,29 +64,7 @@ export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
         onSubmit={handleSubmit(registerFormHandler)}
         className="space-y-5"
       >
-        {/* Full Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Full Name
-          </label>
-          <div className="relative">
-            <User
-              size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              type="text"
-              placeholder="John Doe"
-              {...register("name", { required: "Name is required" })}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-            />
-          </div>
-          {errors.name && (
-            <span className="text-red-500 text-xs mt-1 block">
-              {(errors.name as any).message}
-            </span>
-          )}
-        </div>
+
 
         {/* Username */}
         <div>
@@ -103,11 +83,6 @@ export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
             />
           </div>
-          {errors.username && (
-            <span className="text-red-500 text-xs mt-1 block">
-              {(errors.username as any).message}
-            </span>
-          )}
         </div>
 
         {/* Email */}
@@ -127,11 +102,7 @@ export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
             />
           </div>
-          {errors.email && (
-            <span className="text-red-500 text-xs mt-1 block">
-              {(errors.email as any).message}
-            </span>
-          )}
+
         </div>
 
         {/* Password */}
