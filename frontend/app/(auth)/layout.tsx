@@ -1,12 +1,7 @@
-"use client";
 import Image from "next/image";
-import React, { useState } from "react";
-import Login from "@/app/pages/auth/login/Login";
-import Register from "@/app/pages/auth/register/Register";
+import React from "react";
 
-export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
-
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
       <div className="hidden lg:flex justify-center items-center h-screen">
@@ -27,11 +22,7 @@ export default function AuthPage() {
           </h1>
         </div>
         <div className="w-full flex flex-col px-4 md:w-[500px]">
-          {isLogin ? (
-            <Login toggleAuth={() => setIsLogin(false)} />
-          ) : (
-            <Register toggleAuth={() => setIsLogin(true)} />
-          )}
+          {children}
         </div>
       </div>
     </div>

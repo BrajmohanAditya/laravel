@@ -1,14 +1,15 @@
 "use client";
 import { useState } from "react";
-import { REGISTER_URL } from "@/lib/apiEndPoints";
-import { toast } from "react-toastify";
+import { CHECK_CREDENTIALS } from "@/lib/apiEndPoints";
 import { signIn } from "next-auth/react";
+import { toast } from "react-toastify";
 import myAxios from "@/lib/axios.config";
 import { useForm } from "react-hook-form";
-import { User, Mail, Lock, Loader2, GraduationCap } from "lucide-react";
+import { Mail, Lock, Loader2, LogIn } from "lucide-react";
+import Link from "next/link";
 
-export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
-  const [loading, setLoading] = useState<boolean>(false);
+export default function Login() {
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -16,23 +17,22 @@ export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
     formState: { errors },
   } = useForm();
 
-  const registerFormHandler = async (data: any) => {
-    // Supplying name parameter from username to prevent backend 422 error since it was removed from UI
-    const payload = { ...data, name: data.username };
+  const loginFormHandler = async (data: any) => {
     setLoading(true);
     await myAxios
-      .post(REGISTER_URL, payload)
+      .post(CHECK_CREDENTIALS, data)
       .then((res) => {
         const response = res.data;
         setLoading(false);
-        toast.success("Account created successfully!");
-        if (response?.status == 200 || response?.status == 201) {
+        if (response?.status == 200) {
           signIn("credentials", {
             email: data.email,
             password: data.password,
             redirect: true,
             callbackUrl: "/",
           });
+        } else if (response?.status == 401) {
+          toast.error(response?.message);
         }
       })
       .catch((err) => {
@@ -52,39 +52,15 @@ export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
     <div className="w-full bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
       <div className="text-center mb-8">
         <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-2xl font-bold">
-          <GraduationCap className="w-8 h-8 animate-bounce" />
+          <LogIn className="w-8 h-8" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Signup Account</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Join us and start your journey
+          Sign in to your Daily Dev account
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit(registerFormHandler)}
-        className="space-y-5"
-      >
-
-
-        {/* Username */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Username
-          </label>
-          <div className="relative">
-            <User
-              size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              type="text"
-              placeholder="johndoe123"
-              {...register("username", { required: "Username is required" })}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-            />
-          </div>
-        </div>
-
+      <form onSubmit={handleSubmit(loginFormHandler)} className="space-y-5">
         {/* Email */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -102,7 +78,11 @@ export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
             />
           </div>
-
+          {errors.email && (
+            <span className="text-red-500 text-xs mt-1 block">
+              {(errors.email as any).message}
+            </span>
+          )}
         </div>
 
         {/* Password */}
@@ -129,32 +109,6 @@ export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
           )}
         </div>
 
-        {/* Confirm Password */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Confirm Password
-          </label>
-          <div className="relative">
-            <Lock
-              size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              type="password"
-              placeholder="••••••••"
-              {...register("password_confirmation", {
-                required: "Confirm Password is required",
-              })}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-            />
-          </div>
-          {errors.password_confirmation && (
-            <span className="text-red-500 text-xs mt-1 block">
-              {(errors.password_confirmation as any).message}
-            </span>
-          )}
-        </div>
-
         {/* Submit */}
         <button
           type="submit"
@@ -164,22 +118,21 @@ export default function Register({ toggleAuth }: { toggleAuth: () => void }) {
           {loading ? (
             <Loader2 className="animate-spin mr-2" size={20} />
           ) : (
-            "Create Account"
+            "Sign In"
           )}
         </button>
       </form>
 
       {/* Footer */}
       <p className="text-sm text-center text-gray-600 mt-6">
-        Already have an account?{" "}
-        <span
-          onClick={toggleAuth}
+        Don't have an account?{" "}
+        <Link
+          href="/register"
           className="text-indigo-600 font-medium hover:underline cursor-pointer"
         >
-          Login
-        </span>
+          Register
+        </Link>
       </p>
     </div>
   );
 }
-
